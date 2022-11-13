@@ -1,9 +1,11 @@
 from django.views import generic
 from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from product.models import Variant,Product
+from product.models import Variant,Product,ProductVariant,ProductVariantPrice
 import datetime
 from django.db.models import Q
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 class CreateProductView(generic.TemplateView):
     template_name = 'products/create.html'
@@ -53,5 +55,28 @@ def productListView(request):
 
     context = productListUtils(products,request)
     return render(request,'products/list.html',context)
+
+class ProductCreateView(APIView):
+    def post(self,request):
+        title = request.data.get('title',None)
+        sku = request.data.get('sku',None)
+        description = request.data.get('description',None)
+        product_image = request.data.get('product_image',None)
+        product_variant = request.data.get('product_variant',None)
+        product_variant_prices = request.data.get('product_variant_prices',None)
+        product = Product.objects.create(title=title,sku=sku,description=description)
+        variants = []
+    
+        for x in product_variant:
+            p_variant = ProductVariant.objects.create(variant_title=x['tags'][0],product=product,variant_id=x['option'])
+            variants.append(p_variant)
+        if variants:
+            ProductVariantPrice.objects.create(price=product_variant_prices[0]['price'],stock=product_variant_prices[0]['stock'],
+                                                    product_variant_one=variants[0],
+                                                    product_variant_two=variants[1],
+                                                    product_variant_three=variants[2],product=product)
+        
+
+        return Response({'status':'ok'})
 
 

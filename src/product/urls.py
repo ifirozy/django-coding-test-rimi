@@ -1,12 +1,13 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from product.views.product import CreateProductView,productListView
+from product.views.product import CreateProductView,productListView,ProductCreateView
 from product.views.variant import VariantView, VariantCreateView, VariantEditView
 
 app_name = "product"
 
 urlpatterns = [
+    path('',ProductCreateView.as_view(),name='create.product.vue'),
     # Variants URLs
     path('variants/', VariantView.as_view(), name='variants'),
     path('variant/create', VariantCreateView.as_view(), name='create.variant'),

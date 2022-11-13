@@ -190,7 +190,10 @@ export default {
       }
 
 
-      axios.post('/product', product).then(response => {
+      axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+      axios.defaults.xsrfCookieName = "csrftoken";
+      axios.defaults.withCredentials = true;
+      axios.post('/product/', product).then(response => {
         console.log(response.data);
       }).catch(error => {
         console.log(error);
